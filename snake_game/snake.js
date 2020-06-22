@@ -8,8 +8,9 @@ const SOUTH = { x: 0, y: 1 };
 const getDistance = (p1, p2) => Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
 const randPos = ({ col, row }) => ({ x: Math.floor(Math.random() * col), y: Math.floor(Math.random() * row) });
 const randApplePos = state => {
-  let rand_pos = randPos(state);
-  if(!state.snake.reduce((acc, v) => acc ? getDistance(v, rand_pos) > 3 : acc), true){
+  let rand_pos = randPos(state); 
+  const isDistanceMoreThan3 = apple_pos => state.snake.reduce((acc, v) => acc ? getDistance(v, apple_pos) > 3 : acc, true);
+  while(!isDistanceMoreThan3(rand_pos)){
     rand_pos = randPos(state);
   }
   return rand_pos;

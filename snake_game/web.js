@@ -70,7 +70,7 @@ const draw = () => {
 }
 const step = t0 => t1 => {
   showMessage(state, t0);
-  if(state.pause || t1 - t0 < 100 - state.snake.length * 2) {
+  if(state.pause || t1 - t0 < 100 - state.snake.length * 1) {
     window.requestAnimationFrame(step(t0));
   } else {
       state = next(state);
