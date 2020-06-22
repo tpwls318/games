@@ -34,9 +34,9 @@ const step = t0 => t1 => {
 window.addEventListener('keydown', e => {
   switch (e.key) {
     case 'w': case 'ArrowUp':    state = rotateBlock(state); break;
-    // case 'a': case 'ArrowLeft':  state = move(state, WEST); break;
-    // case 's': case 'ArrowDown':  state = move(state, SOUTH); break;
-    // case 'd': case 'ArrowRight': state = move(state, EAST); break;
+    case 'a': case 'ArrowLeft':  state = move(state, moveLeft); break;
+    case 's': case 'ArrowDown':  state = move(state, moveDown); break;
+    case 'd': case 'ArrowRight': state = move(state, moveRight); break;
     // case ' ': case 'Escape':
     //   state = togglePause(state);
     //   break;

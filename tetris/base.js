@@ -12,5 +12,3 @@ const mapGetRan = map => {
   while(i--) iterator.next();
   return iterator.next().value;
 };
-
-
