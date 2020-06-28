@@ -52,7 +52,7 @@ const draw = () => {
   drawBlock();
 }
 const step = t0 => t1 => {
-  if(isTimeToMove || state.gameover || t1 - t0 < 800) {
+  if(enable_to_move|| state.gameover || t1 - t0 < 800) {
     draw();
     window.requestAnimationFrame(step(t0));
   } else {
@@ -64,11 +64,12 @@ const step = t0 => t1 => {
 }
 
 window.addEventListener('keydown', e => {
-  switch (e.key) {
-    case 'w': case 'ArrowUp':    rotateBlock(); break;
-    case 'a': case 'ArrowLeft':  move(moveLeft); break;
-    case 's': case 'ArrowDown':  move(moveDown); break;
-    case 'd': case 'ArrowRight': move(moveRight); break;
+  let key = e.key;
+  switch (key) {
+    case 'w': case 'ArrowUp':    if(!hard_drop_pressed) rotateBlock(); break;
+    case 'a': case 'ArrowLeft':  if(!hard_drop_pressed) move(moveLeft); break;
+    case 's': case 'ArrowDown':  if(!hard_drop_pressed) move(moveDown); break;
+    case 'd': case 'ArrowRight': if(!hard_drop_pressed) move(moveRight); break;
     case ' ': moveToExpectedLoc(); break;
     //   case 'Escape': state = togglePause(state);
     //   break;

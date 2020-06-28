@@ -1,11 +1,11 @@
 const col_length = 12;
 const row_length = 20;
 let n = 0;
-let isTimeToMove = false;
-let timesToMove = 500;
-const getTime = (n) => { return timesToMove - n * 100; };
+let enable_to_move = false;
+let time_limit = 300;
+let hard_drop_pressed = false;
+const getTime = (n) => { return time_limit - n * 100; };
 let block = mapGetRan(blocksMap);
-// stack => 20 arrs of 10 size arr 
 let stack = new Map();
 for(let i = row_length - 1;i >= 0;i--) stack.set(i, new Map());
 const isGameOver = () => {
@@ -44,8 +44,7 @@ const expectedLoc = (stack, positions) => {
 }
 const moveToExpectedLoc = () =>{
   setState({ positions: state.expectedLoc });
-  // isTimeToMove = 'disable';
-  // setTimeout(() => { isTimeToMove = false; }, timesToMove);
+  hard_drop_pressed = true;
 }
 const isImmovable = () => {
   // stack, base => y >= 0
@@ -97,16 +96,16 @@ const finishCycle = () => {
   if(isGameOver()) toggleGameover();
 };
 const setTimeToMove = () => {
-  // if(isTimeToMove == 'disable') return isTimeToMove = false;
-  isTimeToMove = true;
+  enable_to_move = true;
   const a = (k) => {
-    if(k == n) isTimeToMove = false;
+    if(k == n) enable_to_move = false;
   }
   setTimeout(() => a(++n), getTime(n));
 }
 const newCycle = () => {
-  if(!isTimeToMove) {
+  if(!enable_to_move) {
     finishCycle();
+    hard_drop_pressed = false;
   }
 }
 const isInvalidMove = (positions) => {
@@ -136,14 +135,10 @@ const toggleGameover = () => {
 }
 
 const rotateBlock = () => {
-  // state.block.rel_poss = rotateDiff(state.block.rel_poss);
   let { stack, positions, block: { pivot, rel_poss } } = state;
   if(pivot == null) return -1;
   rel_poss = rotateDiff(rel_poss);
   positions = applyRotate(positions[pivot], rel_poss);
-  // TODO
-  // disable rotate when other block is preempted
-  
   if(hasCollision(positions)){
     if(!hasCollision(positions.map(pos => moveLeft(pos)))){
       positions = positions.map(pos => moveLeft(pos));
