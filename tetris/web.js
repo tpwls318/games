@@ -1,31 +1,63 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const backgroundColor = '#383838';
-let block = mapGetRan(blocksMap);
-let state = initialState(block);
+const backgroundColor = colors['background'];
+setState(initialState());
 let final_score;
 const x = p => p * canvas.width / col_length;
 const y = p => p * canvas.height / row_length;
-
-const draw = () => {
-  // init final score
-  final_score = 0;
-
+const pd = col_length / 16; // padding
+const clearRect = (posX, posY) => {
+  ctx.strokeStyle = backgroundColor;
+  ctx.strokeRect(x(posX) + pd, y(posY) + pd,x(1) - pd * 2,y(1) - pd * 2);
+}
+const paintShadow = (posX, posY, color) => {
+  clearRect(posX, posY);
+  ctx.strokeStyle = color;
+  ctx.strokeRect(x(posX) + pd, y(posY) + pd,x(1) - pd * 2,y(1) - pd * 2);
+}
+const paintBlock = (posX, posY, color) => {
+  clearRect(posX, posY);
+  if(color) ctx.fillStyle = color;
+  ctx.fillRect(x(posX) + pd, y(posY) + pd, x(1) - pd * 2, y(1) - pd * 2);
+}
+const drawMap = () => {
   // bgc
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // block
-  ctx.fillStyle = 'rgb(0, 200, 50)';
-  pd = col_length / 16;
-  state.get('positions').forEach(b => ctx.fillRect(x(b.x) + pd, y(b.y) + pd, x(1) - pd * 2, y(1) - pd * 2));
+
+  // wall
+  ctx.fillStyle = colors['wall'];
+  for(let i = 0;i < 20;i++){
+    paintBlock(0, i);
+    paintBlock(11, i);
+  };
+}
+const drawStack = () => {
+  state.stack.forEach((rowMap, cIdx) => {
+    rowMap.forEach((color, rIdx) => paintBlock(rIdx, cIdx, color))
+  });
+}
+const drawBlock = () => {
+  let { expectedLoc, positions, block: { color } } = state;
+  expectedLoc.forEach(({ x, y }) => paintShadow(x, y, color));
+  positions.forEach(({ x, y }) => paintBlock(x, y, color));
+}
+const draw = () => {
+  // init final score
+  // final_score = 0;
+  if(!state.isMoving){
+    drawMap();
+    drawStack();
+  }
+  drawBlock();
 }
 const step = t0 => t1 => {
-  if(t1 - t0 < 500) {
+  if(isTimeToMove || state.gameover || t1 - t0 < 800) {
     draw();
     window.requestAnimationFrame(step(t0));
   } else {
-      state = next(state);
+      if(isImmovable()) newCycle();
+      nextPositions();
       draw();
       window.requestAnimationFrame(step(t1)); 
   }
@@ -33,12 +65,12 @@ const step = t0 => t1 => {
 
 window.addEventListener('keydown', e => {
   switch (e.key) {
-    case 'w': case 'ArrowUp':    state = rotateBlock(state); break;
-    case 'a': case 'ArrowLeft':  state = move(state, moveLeft); break;
-    case 's': case 'ArrowDown':  state = move(state, moveDown); break;
-    case 'd': case 'ArrowRight': state = move(state, moveRight); break;
-    // case ' ': case 'Escape':
-    //   state = togglePause(state);
+    case 'w': case 'ArrowUp':    rotateBlock(); break;
+    case 'a': case 'ArrowLeft':  move(moveLeft); break;
+    case 's': case 'ArrowDown':  move(moveDown); break;
+    case 'd': case 'ArrowRight': move(moveRight); break;
+    case ' ': moveToExpectedLoc(); break;
+    //   case 'Escape': state = togglePause(state);
     //   break;
   }
 })
