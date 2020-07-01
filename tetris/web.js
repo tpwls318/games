@@ -7,26 +7,21 @@ const next_canvas = document.getElementById('next');
 const next_ctx = next_canvas.getContext('2d');
 const backgroundColor = colors['background'];
 setState(initialState());
-let final_score;
-let { width, height } = canvas; // 300, 500
+let { width, height } = canvas;
 const x = p => p * canvas.width / col_length;
 const y = p => p * canvas.height / row_length;
 const holdX = p => p * hold_canvas.width / block_col_length;
 const holdY = p => p * hold_canvas.height / block_row_length;
 const pd = col_length / 16; // padding
-const gameoverPopup = () => {
-  const gameover_text = document.getElementById("gameover_text");
-  const score_text = document.getElementById("score_text");
-  gameover_text.innerHTML = 'GAME OVER';
-  score_text.innerHTML = `SCORE: ${status.score}<br><br>PRESS ENTER<br>TO RESTART`;
-};
+const showGameover = () => {
+  document.getElementById("score_text").innerHTML = `SCORE: ${status.score}<br><br>PRESS ENTER<br>TO RESTART`;
+}
 const tetrisPopup = () => {
   const tetris_popup = document.getElementById('tetris_popup');
   tetris_popup.innerHTML = `
 <span>T</span><span style="color: ${colors['L']}">E</span><span>T</span><span style="color: ${colors['Z']}">R</span><span style="color: ${colors['O']}">I</span><span style="color: ${colors['T']}">S</span>`;
 };
 tetrisPopup();
-gameoverPopup();
 const fillWholeRect = (id, color) => {
   const cv = document.getElementById(id);
   const id_ctx = cv.getContext('2d');
@@ -119,6 +114,7 @@ const drawHome = () => {
   ctx.drawImage(tetris, width / 2 - 125, 75, 250, 250);
   ctx.drawImage(sj_park, width / 2 - 60, 300, 124, 98);
   const key_info = document.getElementById('key_info');
+  key_info.style.visibility = 'visible';
   key_info.innerText = `START: ENTER
   MOVE RIGHT/LEFT: RIGHT/LEFT ARROW
   ROTATE CLOCKWISE: UP ARROW
@@ -143,7 +139,10 @@ const draw = () => {
   drawHold();
   drawNext();
   drawStatus();
-  if(gameover) gameover_popup.style.visibility = 'visible';
+  if(gameover) {
+    showGameover();
+    gameover_popup.style.visibility = 'visible';
+  }
   if(tetris) {
     tetris_popup.style.visibility = 'visible';
     setTimeout(() => {
@@ -174,7 +173,10 @@ window.addEventListener('keydown', e => {
   let { home, gameover } = state;
   if(home || gameover){
     if(e.key == 'Enter'){
-      if(home) setState({ home: !home });
+      if(home) {
+        setState({ home: !home });
+        document.getElementById('key_info').style.visibility = 'hidden';
+      }
       else {
         setState(initialState());
         gameover_popup.style.visibility = 'hidden';

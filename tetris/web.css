@@ -94,6 +94,7 @@ body {
   color: white;
   font-size: 0.7rem;
   line-height: 1.4rem;
+  letter-spacing: 0.05rem;
 }
 #tetris_popup {
   position: absolute;
