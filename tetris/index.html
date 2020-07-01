@@ -9,12 +9,32 @@
 </head>
 
 <body>
+  <div id="left">
+    <div id="hold_text" class="text block_text"></div>
+    <canvas id="hold"></canvas>
+    <canvas id="left_space"></canvas>
+  </div>
   <canvas id="canvas" width="300" height="500"></canvas>
+  <div id="popup_container">
+    <div id="gameover_popup" class="popup">
+      <div id="gameover_text"></div>
+      <div id="score_text"></div>
+    </div>
+    <div id="tetris_popup" class="popup"></div>
+    <div id="key_info" class="popup"></div>
+  </div>
+  <div id="status_board">
+    <div id="next_text" class="text block_text"></div>
+    <canvas id="next"></canvas>
+    <div id="status" class="text"></div>
+  </div>
   <script src="base.js"></script>
   <script src="blocks.js"></script>
   <script src="state.js"></script>
   <script src="tetris.js"></script>
   <script src="web.js"></script>
+  <img id="SJPARK" class="image" src="images/SJPARK.png">
+  <img id="TETRIS" class="image" src="images/TETRIS.png">
 </body>
 
 </html>

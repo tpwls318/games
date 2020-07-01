@@ -4,21 +4,16 @@ let n = 0;
 let enable_to_move = false;
 let time_limit = 300;
 let hard_drop_pressed = false;
-const getTime = (n) => { return time_limit - n * 100; };
-let block = mapGetRan(blocksMap);
-let stack = new Map();
-for(let i = row_length - 1;i >= 0;i--) stack.set(i, new Map());
+const getTime = (n) => time_limit - n * 50;
 const isGameOver = () => {
   let { positions, stack } = state;
-  return positions.reduce((acc, { x, y }) => {
-      return stack.get(y) && stack.get(y).get(x) || acc;
-    }, false);
+  return positions.reduce((acc, { x, y }) => stack.get(y) && stack.get(y).get(x) || acc, false);
 }
 const hasCollision = (positions) => {
   let { stack } = state;
-  return positions.reduce((acc, { x, y }) => {
-      return y >= row_length || x < 1 || x > (col_length - 2) || stack.get(y) && stack.get(y).get(x) || acc;
-    }, false)
+  return positions.reduce((acc, { x, y }) =>
+      y >= row_length || x < 1 || x > (col_length - 2) || stack.get(y) && stack.get(y).get(x) || acc
+      , false)
 }
 const possEQ = (poss1, poss2) => poss1.reduce(
   (acc, pos, i) => pos.x != poss2[i].x || pos.y != poss2[i].y ? false : acc, true
@@ -38,9 +33,7 @@ const expectedLoc = (stack, positions) => {
     let diff = i - v - 1;
     if(min_diff > diff) min_diff = diff;
   }
-  return positions.map(({ x, y }) => {
-    return { x, y: (y + min_diff)};
-  });
+  return positions.map(({ x, y }) => ({ x, y: (y + min_diff)}));
 }
 const moveToExpectedLoc = () =>{
   setState({ positions: state.expectedLoc });
@@ -49,23 +42,32 @@ const moveToExpectedLoc = () =>{
 const isImmovable = () => {
   // stack, base => y >= 0
   let { positions, stack } = state;
-  return positions.reduce((acc, { x, y }) => {
-     return y + 1 > 19 || stack.get(y + 1) && stack.get(y + 1).get(x) || acc;
-  }, false);
+  return positions.reduce((acc, { x, y }) => 
+     y + 1 > 19 || stack.get(y + 1) && stack.get(y + 1).get(x) || acc
+  , false);
 };
 const newBlock = () => {
-  let { stack } = state;
-  let block = mapGetRan(blocksMap);
+  let { stack, blockQueue } = state;
+  blockQueue.pop();
+  let block = blockQueue[blockQueue.length - 1];
+  blockQueue.unshift(mapGetRan(blocksMap));
   setState({ 
     block,
+    blockQueue,
     positions: block.start,
     expectedLoc: expectedLoc(stack, block.start),
    });
 };
 const clearLine = () => {
   let { stack } = state;
+  let { line, level, score } = status;
+  let score_to_gain = 0;
+  let cleared_lines = 0;
   for(let i = 0;i < row_length;i++){
-    if(stack.get(i).size == 10) stack.delete(i);
+    if(stack.get(i).size == 10) {
+      stack.delete(i);
+      cleared_lines++;
+    }
   }
   const iterator1 = stack.entries();
   let next = iterator1.next().value;
@@ -78,6 +80,19 @@ const clearLine = () => {
     }
     next = iterator1.next().value;
     i--;
+  }
+  if(cleared_lines == 4) {
+    score_to_gain += 100;
+    setState({ tetris: true });
+  }
+  score_to_gain += cleared_lines * 100;
+  setStatus({ line: line + cleared_lines, score: score += score_to_gain * (1 + 0.1 * level) });
+  if(line + cleared_lines >= 10 && level < 12){
+    setTimeout(() => {
+      setStatus({
+        line: 0, level: level + 1,
+      })
+    }, 500);
   }
   while(i >= 0) stack.set(i--, new Map());
 };
@@ -110,9 +125,9 @@ const newCycle = () => {
 }
 const isInvalidMove = (positions) => {
   let { stack } = state;
-  return positions.reduce((acc, { x, y }) => {
-     return y > 19 || x < 1 || x > 10 || stack.get(y) && stack.get(y).get(x) || acc;
-  }, false);
+  return positions.reduce((acc, { x, y }) => 
+    y > 19 || x < 1 || x > 10 || stack.get(y) && stack.get(y).get(x) || acc
+  , false);
 };
 const moveDown = cur_pos => ({ x: cur_pos.x, y: cur_pos.y + 1});
 const moveRight = cur_pos => ({ x: cur_pos.x + 1, y: cur_pos.y});
@@ -123,7 +138,7 @@ const move = (moveDir) => {
       setState({ positions });
       if(moveDir.name != 'moveDown'){
         if(isImmovable()) setTimeToMove();
-        setState({ expectedLoc: expectedLoc(stack, positions) });
+        setState({ expectedLoc: expectedLoc(state.stack, positions) });
       }
     }
 }
@@ -154,11 +169,39 @@ const rotateBlock = () => {
   });
   if(isImmovable()) setTimeToMove();
 };
-const initialState = () => ({
-  stack,
-  block,
-  expectedLoc: expectedLoc(stack, block.start),
-  positions: block.start,
-  isMoving: false,
-  gameover: false,
-});
+const switchHold = () => {
+  let { hold } = status;
+  let { blockQueue, stack } = state;
+  setStatus({ hold: blockQueue.pop() });
+  if(hold){
+    blockQueue.push(hold);
+  } else {
+    blockQueue.unshift(mapGetRan(blocksMap));
+  }
+  let block = blockQueue[blockQueue.length - 1];
+  setState({
+    blockQueue,
+    block,
+    expectedLoc: expectedLoc(stack, block.start),
+    positions: block.start,
+  });
+}
+const togglePause = () => {
+  setState({ pause: !state.pause });
+};
+const initialState = () => {
+  let stack = new Map();
+  for(let i = row_length - 1;i >= 0;i--) stack.set(i, new Map());
+  let blockQueue = Array.from({ length: 4 }, v => mapGetRan(blocksMap));
+  return ({
+    stack,
+    block: blockQueue[blockQueue.length - 1],
+    blockQueue,
+    expectedLoc: expectedLoc(stack, blockQueue[blockQueue.length - 1].start),
+    positions: blockQueue[blockQueue.length - 1].start,
+    gameover: false,
+    pause: false,
+    home: true,
+    tetris: false,
+  });
+}

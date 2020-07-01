@@ -1,0 +1,128 @@
+body {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.text {
+  color: white;
+  font-family: 'Minecrafter';
+  letter-spacing: 0.05rem;
+  line-height: 1.12rem;
+}
+#status_board {
+  width: 125px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+#left {
+  width: 125px;
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+#left_space {
+  height: 375px;
+  width: 125px;
+}
+#hold {
+  height: 125px;
+  width: 125px;
+}
+#next {
+  height: 125px;
+  width: 125px;
+}
+#status {
+  flex: auto;
+  font-size: 0.5rem;
+  padding-top: 16px;
+  padding-left: 12px;
+}
+#home {
+  position: absolute;
+  font-family: 'Minecrafter';
+}
+.block_text {
+  position: absolute;
+  font-size: 0.8rem;
+  width: 125px;
+  height: 18px;
+  text-align: center;
+  padding-top: 12px;
+}
+@font-face {
+  font-family: 'Minecrafter';
+  src: 'Minecrafter';
+}
+.image {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
+}
+.popup {
+  text-align: center;
+  font-family: 'Minecrafter';
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+}
+#popup_container {
+  display: flex;
+  width: 300px;
+  height: 500px;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+}
+#gameover_popup {
+  background-color: black;
+  width: 160px;
+  height: 230px;
+  color: white;
+}
+#gameover_text {
+  color: rgb(219, 67, 67);
+  font-size: 2.5rem;
+  text-align: center;
+  margin-top: 20px;
+  line-height: 3rem;
+}
+#score_text {
+  margin-top: 10px;
+  color: white;
+  font-size: 0.7rem;
+  line-height: 1.4rem;
+}
+#tetris_popup {
+  position: absolute;
+  display: flex;
+  background-color: white;
+  font-size: 2rem;
+  width: 250px;
+  height: 70px;
+  color: #CE4141;
+  letter-spacing: 0.05rem;
+  justify-content: center;
+  align-items: center;
+  padding-top: 5px;
+}
+#S {
+  position: absolute;
+  margin-top: 220px;
+  width: 100px;
+  height: 50px;
+}
+#key_info {
+  position: absolute;
+  font-size: 0.6rem;
+  letter-spacing: 0.05rem;
+  line-height: 1.05rem;
+  bottom: 0px;
+  visibility: visible;
+  width: 300px;
+  height: 105px;
+  color: rgb(225, 225, 225);
+  opacity: 0.6;
+}
