@@ -172,7 +172,7 @@ const step = t0 => t1 => {
 window.addEventListener('keydown', e => {
   let { home, gameover } = state;
   if(home || gameover){
-    if(e.key == 'Enter'){
+    if(e.code == 'Enter'){
       if(home) {
         setState({ home: !home });
         document.getElementById('key_info').style.visibility = 'hidden';
@@ -183,14 +183,14 @@ window.addEventListener('keydown', e => {
       }
     }
   } else {
-    switch (e.key) {
-      case 'W': case 'w': case 'ArrowUp':    if(!hard_drop_pressed) rotateBlock(); break;
-      case 'A': case 'a': case 'ArrowLeft':  if(!hard_drop_pressed) move(moveLeft); break;
-      case 'S': case 's': case 'ArrowDown':  if(!hard_drop_pressed) move(moveDown); break;
-      case 'D': case 'd': case 'ArrowRight': if(!hard_drop_pressed) move(moveRight); break;
-      case ' ': moveToExpectedLoc(); break; // hard drop
-      case 'Q': case 'q': case 'Shift': switchHold(); break; // hold
-      case 'P': case 'p': case 'Escape': togglePause(); // pause
+    switch (e.code) {
+      case 'KeyW': case 'ArrowUp':    if(!hard_drop_pressed) rotateBlock(); break;
+      case 'KeyA': case 'ArrowLeft':  if(!hard_drop_pressed) move(moveLeft); break;
+      case 'KeyS': case 'ArrowDown':  if(!hard_drop_pressed) move(moveDown); break;
+      case 'KeyD': case 'ArrowRight': if(!hard_drop_pressed) move(moveRight); break;
+      case 'Space': moveToExpectedLoc(); break; // hard drop
+      case 'KeyQ': case 'ShiftLeft': case 'ShiftRight': switchHold(); break; // hold
+      case 'KeyP': case 'Escape': togglePause(); // pause
     }
   }
 })
